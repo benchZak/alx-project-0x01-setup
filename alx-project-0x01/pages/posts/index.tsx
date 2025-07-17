@@ -1,10 +1,15 @@
-import React from "react";
+import Header from "@/components/layout/Header";
 
 const PostsPage: React.FC = () => {
   return (
-    <div className="p-4">
-      <h1 className="text-3xl font-bold mb-4">Posts</h1>
-      {/* Posts will be listed here */}
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-grow container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-6">Posts</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Post cards will be rendered here */}
+        </div>
+      </main>
     </div>
   );
 };
