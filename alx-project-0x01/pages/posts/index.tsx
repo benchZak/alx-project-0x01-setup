@@ -3,7 +3,7 @@ import Header from "@/components/layout/Header";
 import UserCard from "@/components/common/UserCard";
 import UserModal from "@/components/common/UserModal";
 import UserProps from "@/interfaces";
-import { UserData, PostData } from "@/interfaces"; // Added PostData import
+import { UserData, PostProps, PostData } from "@/interfaces"; // Added PostData import
 import { useState } from "react";
 
 interface UsersPageProps {
