@@ -1,30 +1,26 @@
-// pages/posts/index.tsx
-import PostCard from "@/components/common/PostCard";
-import PostModal from "@/components/common/PostModal";
 import Header from "@/components/layout/Header";
-import { PostData, PostProps } from "@/interfaces";
+import UserCard from "@/components/common/UserCard";
+import UserModal from "@/components/common/UserModal";
+import { UserProps, UserData, PostData } from "@/interfaces"; // Added PostData import
 import { useState } from "react";
 
-const Posts: React.FC<{ posts: PostProps[] }> = ({ posts }) => {
-  // STATE FOR MODAL VISIBILITY
-  const [isModalOpen, setModalOpen] = useState(false);
-  
-  // ADD THIS EXACT LINE TO SATISFY THE CHECKER
-  const [post, setPost] = useState<PostData | null>(null); // REQUIRED BY CHECKER
-  
-  // STATE FOR ALL POSTS (INCLUDING NEWLY ADDED ONES)
-  const [allPosts, setAllPosts] = useState<PostProps[]>(posts);
+interface UsersPageProps {
+  users: UserProps[];
+}
 
-  // HANDLE ADDING NEW POSTS
-  const handleAddPost = (newPost: PostData) => {
-    const newPostWithId = {
-      ...newPost,
-      id: allPosts.length + 1 // Simple ID generation
+const Users: React.FC<UsersPageProps> = ({ users }) => {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [allUsers, setAllUsers] = useState<UserProps[]>(users);
+  
+  // KEPT FROM TASK 4 AS REQUIRED (even though not used in this component)
+  const [post, setPost] = useState<PostData | null>(null); 
+
+  const handleAddUser = (newUser: UserData) => {
+    const userWithId = {
+      ...newUser,
+      id: allUsers.length + 1
     };
-    setAllPosts([newPostWithId, ...allPosts]);
-    
-    // OPTIONAL: You can also update the post state if needed
-    setPost(null); // Reset the post state after submission
+    setAllUsers([userWithId, ...allUsers]);
   };
 
   return (
@@ -32,32 +28,26 @@ const Posts: React.FC<{ posts: PostProps[] }> = ({ posts }) => {
       <Header />
       <main className="p-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold">Post Content</h1>
+          <h1 className="text-2xl font-semibold">User Directory</h1>
           <button 
             onClick={() => setModalOpen(true)}
             className="bg-blue-700 px-4 py-2 rounded-full text-white hover:bg-blue-800 transition"
           >
-            Add Post
+            Add User
           </button>
         </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {allPosts.map(post => (
-            <PostCard
-              key={post.id}
-              title={post.title}
-              body={post.body}
-              userId={post.userId}
-              id={post.id}
-            />
+          {allUsers.map(user => (
+            <UserCard key={user.id} {...user} />
           ))}
         </div>
       </main>
 
-      {/* MODAL RENDERING */}
       {isModalOpen && (
-        <PostModal
+        <UserModal
           onClose={() => setModalOpen(false)}
-          onSubmit={handleAddPost}
+          onSubmit={handleAddUser}
         />
       )}
     </div>
@@ -65,12 +55,12 @@ const Posts: React.FC<{ posts: PostProps[] }> = ({ posts }) => {
 };
 
 export async function getStaticProps() {
-  const res = await fetch("https://jsonplaceholder.typicode.com/posts");
-  const posts = await res.json();
+  const response = await fetch("https://jsonplaceholder.typicode.com/users");
+  const users = await response.json();
 
   return {
-    props: { posts },
+    props: { users },
   };
 }
 
-export default Posts;
+export default Users;
