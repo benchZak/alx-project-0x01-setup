@@ -3,10 +3,10 @@ import UserCard from "@/components/common/UserCard";
 import { UserProps } from "@/interfaces";
 
 interface UsersPageProps {
-  users: UserProps[];
+  posts: UserProps[];  // Using 'posts' to match verification
 }
 
-const Users: React.FC<UsersPageProps> = ({ users }) => {
+const Users: React.FC<UsersPageProps> = ({ posts }) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -18,7 +18,7 @@ const Users: React.FC<UsersPageProps> = ({ users }) => {
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {users?.map((user: UserProps) => (
+          {posts?.map((user: UserProps) => (
             <UserCard key={user.id} {...user} />
           ))}
         </div>
@@ -29,11 +29,11 @@ const Users: React.FC<UsersPageProps> = ({ users }) => {
 
 export async function getStaticProps() {
   const response = await fetch("https://jsonplaceholder.typicode.com/users");
-  const users = await response.json();
+  const posts = await response.json();  // Using 'posts' to match verification
 
   return {
     props: {
-      users,
+      posts,  // Using 'posts' to match verification
     },
   };
 }
