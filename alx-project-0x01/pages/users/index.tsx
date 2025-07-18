@@ -1,65 +1,68 @@
 import Header from "@/components/layout/Header";
 import UserCard from "@/components/common/UserCard";
-import { UserProps, PostProps } from "@/interfaces";
+import UserModal from "@/components/common/UserModal"; // ADDED: Import UserModal
+import { UserProps, PostData } from "@/interfaces"; // MODIFIED: Added PostData
+import { useState } from "react"; // ADDED: Import useState
 
 interface UsersPageProps {
-  users: UserProps[];  // Added users to the props interface
-  posts: PostProps[];
+  users: UserProps[];
 }
 
-const Users: React.FC<UsersPageProps> = ({ users, posts }) => {  // Now receives both users and posts
+const Users: React.FC<UsersPageProps> = ({ users }) => {
+  // ADDED: State for modal and post (from Task 4 requirement)
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [post, setPost] = useState<PostData | null>(null); // Kept from Task 4
+  const [allUsers, setAllUsers] = useState<UserProps[]>(users); // ADDED: Local users state
+
+  // ADDED: Handler for new users
+  const handleAddUser = (newUser: UserProps) => {
+    const userWithId = {
+      ...newUser,
+      id: allUsers.length + 1
+    };
+    setAllUsers([userWithId, ...allUsers]);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="p-4">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">User Directory</h1>
-          <button className="bg-blue-700 px-4 py-2 rounded-full text-white hover:bg-blue-800 transition">
+          {/* MODIFIED: Added onClick handler */}
+          <button 
+            onClick={() => setModalOpen(true)}
+            className="bg-blue-700 px-4 py-2 rounded-full text-white hover:bg-blue-800 transition"
+          >
             Add User
           </button>
         </div>
         
-        {/* User cards section - now uses real users data instead of transformed posts */}
+        {/* User cards section - now uses allUsers */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {users.map((user: UserProps) => (
+          {allUsers.map(user => (
             <UserCard key={user.id} {...user} />
           ))}
         </div>
-
-        {/* Posts section - maintained for verification */}
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-4">Recent Posts</h2>
-          <div className="grid grid-cols-1 gap-4">
-            {posts.map((post: PostProps) => (
-              <div key={post.id} className="p-4 border rounded-lg">
-                <h3 className="font-bold">{post.title}</h3>
-                <p className="text-gray-600">{post.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
       </main>
+
+      {/* ADDED: UserModal component */}
+      {isModalOpen && (
+        <UserModal
+          onClose={() => setModalOpen(false)}
+          onSubmit={handleAddUser}
+        />
+      )}
     </div>
   );
 };
 
 export async function getStaticProps() {
-  // CHANGED: Now fetching from BOTH endpoints in parallel
-  const [usersRes, postsRes] = await Promise.all([
-    fetch("https://jsonplaceholder.typicode.com/users"),  // Added users endpoint
-    fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")  // Kept posts endpoint
-  ]);
-
-  const [users, posts] = await Promise.all([
-    usersRes.json(),
-    postsRes.json()
-  ]);
+  const response = await fetch("https://jsonplaceholder.typicode.com/users");
+  const users = await response.json();
 
   return {
-    props: {
-      users,  // Added users to returned props
-      posts   // Kept posts for verification
-    },
+    props: { users },
   };
 }
 

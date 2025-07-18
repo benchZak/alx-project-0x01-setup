@@ -2,7 +2,8 @@ import { UserData, UserModalProps } from "@/interfaces";
 import { useState } from "react";
 
 const UserModal: React.FC<UserModalProps> = ({ onClose, onSubmit }) => {
-  const [user, setUser] = useState<UserData>({
+  const [user, setUser] = useState<UserProps>({
+    id: 0, // Added required id field
     name: "",
     username: "",
     email: "",
