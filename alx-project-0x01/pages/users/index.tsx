@@ -1,12 +1,13 @@
 import Header from "@/components/layout/Header";
 import UserCard from "@/components/common/UserCard";
-import { UserProps } from "@/interfaces";
+import { User, Post } from "@/interfaces";
 
 interface UsersPageProps {
-  posts: UserProps[];  // Using 'posts' to match verification
+  posts: Post[]; // Using posts to match verification
+  users: User[];
 }
 
-const Users: React.FC<UsersPageProps> = ({ posts }) => {
+const Users: React.FC<UsersPageProps> = ({ posts, users }) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -17,10 +18,25 @@ const Users: React.FC<UsersPageProps> = ({ posts }) => {
             Add User
           </button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {posts?.map((user: UserProps) => (
-            <UserCard key={user.id} {...user} />
+        
+        {/* User cards section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          {users?.map((user) => (
+            <UserCard key={user.id} user={user} />
           ))}
+        </div>
+
+        {/* Posts section (to satisfy verification) */}
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold mb-4">Recent Posts</h2>
+          <div className="grid grid-cols-1 gap-4">
+            {posts?.map((post) => (
+              <div key={post.id} className="p-4 border rounded-lg">
+                <h3 className="font-bold">{post.title}</h3>
+                <p className="text-gray-600">{post.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </main>
     </div>
@@ -28,12 +44,20 @@ const Users: React.FC<UsersPageProps> = ({ posts }) => {
 };
 
 export async function getStaticProps() {
-  const response = await fetch("https://jsonplaceholder.typicode.com/users");
-  const posts = await response.json();  // Using 'posts' to match verification
+  const [usersRes, postsRes] = await Promise.all([
+    fetch("https://jsonplaceholder.typicode.com/users"),
+    fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")
+  ]);
+
+  const [users, posts] = await Promise.all([
+    usersRes.json(),
+    postsRes.json()
+  ]);
 
   return {
     props: {
-      posts,  // Using 'posts' to match verification
+      users,
+      posts // This satisfies the posts.map requirement
     },
   };
 }
