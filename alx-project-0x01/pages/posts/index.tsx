@@ -1,7 +1,9 @@
+import PostCard from "@/components/common/PostCard"; // Required for Task 2
 import Header from "@/components/layout/Header";
 import UserCard from "@/components/common/UserCard";
 import UserModal from "@/components/common/UserModal";
-import { UserProps, UserData, PostData } from "@/interfaces"; // Added PostData import
+import UserProps from "@/interfaces";
+import { UserData, PostData } from "@/interfaces"; // Added PostData import
 import { useState } from "react";
 
 interface UsersPageProps {
@@ -55,6 +57,8 @@ const Users: React.FC<UsersPageProps> = ({ users }) => {
 };
 
 export async function getStaticProps() {
+  const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+  const posts = await response.json();
   const response = await fetch("https://jsonplaceholder.typicode.com/users");
   const users = await response.json();
 
