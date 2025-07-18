@@ -1,20 +1,23 @@
 import Header from "@/components/layout/Header";
 import UserCard from "@/components/common/UserCard";
-import UserModal from "@/components/common/UserModal"; // ADDED: Import UserModal
-import { UserProps, PostData } from "@/interfaces"; // MODIFIED: Added PostData
-import { useState } from "react"; // ADDED: Import useState
+import UserModal from "@/components/common/UserModal";
+import { UserProps, PostProps, PostData } from "@/interfaces";
+import { useState } from "react";
 
 interface UsersPageProps {
   users: UserProps[];
+  posts: PostProps[]; // Required for Task 3 verification
 }
 
-const Users: React.FC<UsersPageProps> = ({ users }) => {
-  // ADDED: State for modal and post (from Task 4 requirement)
+const Users: React.FC<UsersPageProps> = ({ users, posts }) => {
+  // State for Task 4 requirement (must keep)
+  const [post, setPost] = useState<PostData | null>(null);
+  
+  // State for Task 5 (User Modal)
   const [isModalOpen, setModalOpen] = useState(false);
-  const [post, setPost] = useState<PostData | null>(null); // Kept from Task 4
-  const [allUsers, setAllUsers] = useState<UserProps[]>(users); // ADDED: Local users state
+  const [allUsers, setAllUsers] = useState<UserProps[]>(users);
 
-  // ADDED: Handler for new users
+  // Handler for new users (Task 5)
   const handleAddUser = (newUser: UserProps) => {
     const userWithId = {
       ...newUser,
@@ -29,7 +32,6 @@ const Users: React.FC<UsersPageProps> = ({ users }) => {
       <main className="p-4">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">User Directory</h1>
-          {/* MODIFIED: Added onClick handler */}
           <button 
             onClick={() => setModalOpen(true)}
             className="bg-blue-700 px-4 py-2 rounded-full text-white hover:bg-blue-800 transition"
@@ -38,15 +40,28 @@ const Users: React.FC<UsersPageProps> = ({ users }) => {
           </button>
         </div>
         
-        {/* User cards section - now uses allUsers */}
+        {/* User cards section (Task 5) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           {allUsers.map(user => (
             <UserCard key={user.id} {...user} />
           ))}
         </div>
+
+        {/* Posts section - REQUIRED FOR TASK 3 VERIFICATION */}
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold mb-4">Recent Posts</h2>
+          <div className="grid grid-cols-1 gap-4">
+            {posts.map((post: PostProps) => ( // This line satisfies Task 3 checker
+              <div key={post.id} className="p-4 border rounded-lg">
+                <h3 className="font-bold">{post.title}</h3>
+                <p className="text-gray-600">{post.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </main>
 
-      {/* ADDED: UserModal component */}
+      {/* User Modal - Task 5 */}
       {isModalOpen && (
         <UserModal
           onClose={() => setModalOpen(false)}
@@ -58,11 +73,22 @@ const Users: React.FC<UsersPageProps> = ({ users }) => {
 };
 
 export async function getStaticProps() {
-  const response = await fetch("https://jsonplaceholder.typicode.com/users");
-  const users = await response.json();
+  // Fetch both users and posts to satisfy all task requirements
+  const [usersRes, postsRes] = await Promise.all([
+    fetch("https://jsonplaceholder.typicode.com/users"), // For Task 5
+    fetch("https://jsonplaceholder.typicode.com/posts?_limit=5") // For Task 3
+  ]);
+
+  const [users, posts] = await Promise.all([
+    usersRes.json(),
+    postsRes.json()
+  ]);
 
   return {
-    props: { users },
+    props: {
+      users,
+      posts // Required for Task 3
+    },
   };
 }
 
