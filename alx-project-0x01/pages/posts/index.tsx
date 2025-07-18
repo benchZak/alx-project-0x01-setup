@@ -4,7 +4,7 @@ import UserCard from "@/components/common/UserCard";
 import UserModal from "@/components/common/UserModal";
 import UserProps from "@/interfaces";
 import { useState } from "react";
-import  PostProps from "@/interfaces"; // Added PostData import
+import { PostProps } from "@/interfaces"; // Added PostData import
 import { UserData, PostData } from "@/interfaces"; // Added PostData import
 
 interface UsersPageProps {
