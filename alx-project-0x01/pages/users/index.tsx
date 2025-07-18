@@ -1,10 +1,10 @@
 import Header from "@/components/layout/Header";
 import UserCard from "@/components/common/UserCard";
-import { User, Post } from "@/interfaces";
+import { UserProps, PostProps } from "@/interfaces";
 
 interface UsersPageProps {
-  posts: Post[]; // Using posts to match verification
-  users: User[];
+  posts: PostProps[];
+  users: UserProps[];
 }
 
 const Users: React.FC<UsersPageProps> = ({ posts, users }) => {
@@ -21,16 +21,16 @@ const Users: React.FC<UsersPageProps> = ({ posts, users }) => {
         
         {/* User cards section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {users?.map((user) => (
+          {users?.map((user: UserProps) => (
             <UserCard key={user.id} user={user} />
           ))}
         </div>
 
-        {/* Posts section (to satisfy verification) */}
+        {/* Posts section */}
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-4">Recent Posts</h2>
           <div className="grid grid-cols-1 gap-4">
-            {posts?.map((post) => (
+            {posts?.map((post: PostProps) => (
               <div key={post.id} className="p-4 border rounded-lg">
                 <h3 className="font-bold">{post.title}</h3>
                 <p className="text-gray-600">{post.body}</p>
@@ -57,7 +57,7 @@ export async function getStaticProps() {
   return {
     props: {
       users,
-      posts // This satisfies the posts.map requirement
+      posts
     },
   };
 }
